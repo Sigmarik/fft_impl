@@ -19,7 +19,7 @@ bool equal(double alpha, double beta) {
 Even though the code should explain itself, this does not apply for FFT
 algorithm as its complexity and ingenuity can only be lowered to "holy sh*t"
 mark. So... the code below is overflowed with comments not without a reason, as
-I want to use it as a guide for my tiny-little brain that will no power to
+I want to use it as a guide for my tiny-little brain that will have no power to
 revise FFT with standard formulas before the exam.
 */
 
