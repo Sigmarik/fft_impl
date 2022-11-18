@@ -9,6 +9,11 @@
 #include "lib/alloc_tracker/alloc_tracker.h"
 
 static const double PI = 3.1415926535;
+static double CMP_EPSILON = 1e-7;
+
+bool equal(double alpha, double beta) {
+    return abs(alpha - beta) < CMP_EPSILON;
+}
 
 /*
 Even though the code should explain itself, this does not apply for FFT
@@ -41,13 +46,15 @@ void fft(poly_arg_t* begin, poly_arg_t* end, bool inverse, poly_arg_t* swap_buff
         create_buffer = true;
     }
 
+    poly_arg_t* buffer_mid = swap_buffer + size / 2;
+
     //* Split the polynomial into even and odd sections for easier value duplication.
     for (size_t id = 0; id * 2 < size; ++id) {
         swap_buffer[id] = begin[id * 2];
-        swap_buffer[size / 2 + id] = begin[id * 2 + 1];
+        buffer_mid [id] = begin[id * 2 + 1];
     }
 
-    memcpy(begin, swap_buffer, size);
+    memcpy(begin, swap_buffer, size * sizeof(*begin));
 
     poly_arg_t* mid = begin + size / 2;
 
@@ -72,14 +79,9 @@ void fft(poly_arg_t* begin, poly_arg_t* end, bool inverse, poly_arg_t* swap_buff
         Vec2D value_a = begin[id];
         Vec2D value_b = mid[id];
 
-        log_printf(STATUS_REPORTS, "status", "Got values (%lg, %lg) and (%lg, %lg). RU = (%lg, %lg).\n", 
-                                              value_a.x, value_a.y, value_b.x, value_b.y, ru.x, ru.y);
-
         //* Here it is! Here we calculate the value at i-th RU and determine poly's value at diametrical counterpart!
         begin[id] = value_a + ru * value_b;
         mid[id] = value_a - ru * value_b;
-        _log_printf(STATUS_REPORTS, "status", "Calculated values (%lg, %lg), (%lg, %lg).\n",
-                                               begin[id].x, begin[id].y, mid[id].x, mid[id].y);
     }
 
     if (create_buffer) free(swap_buffer);
@@ -88,10 +90,13 @@ void fft(poly_arg_t* begin, poly_arg_t* end, bool inverse, poly_arg_t* swap_buff
 }
 
 void poly_multiply(poly_arg_t* alpha, poly_arg_t* beta, size_t size) {
-    //* Roses are red,
-    //* Violets are blue.
-    //* I am committing a f*cking war crime if this statement
-    //* Will not always be true.
+    //*     Roses are red,
+    //*     Violets are blue.
+    //*     I am committing a war crime if this statement
+    //*     Will not always be true.
+    //*                 |
+    //*                 |
+    //*                 v
     _LOG_FAIL_CHECK_(~size & (size - 1), "error", ERROR_REPORTS, return, &errno, EINVAL);
 
     fft(alpha, alpha + size, false, NULL);
@@ -103,4 +108,9 @@ void poly_multiply(poly_arg_t* alpha, poly_arg_t* beta, size_t size) {
 
     fft(alpha, alpha + size, true, NULL);
     fft(beta,  beta  + size, true, NULL);
+
+    for (size_t id = 0; id < size; ++id) {
+        alpha[id] /= (double)size;
+        beta[id]  /= (double)size;
+    }
 }

@@ -21,9 +21,19 @@ struct Vec2D {
     Vec2D operator*(Vec2D beta) { return {x * beta.x - y * beta.y, x * beta.y + y * beta.x}; }
     Vec2D operator+(Vec2D beta) { return {x + beta.x, y + beta.y}; }
     Vec2D operator-(Vec2D beta) { return {x - beta.x, y - beta.y}; }
+    void operator/=(double dbl) { x /= dbl; y /= dbl; }
 };
 
 typedef Vec2D poly_arg_t;
+
+/**
+ * @brief Compare two doubles and tell if they are equal.
+ * 
+ * @param alpha first double
+ * @param beta second double
+ * @return bool if values are within the set delta radius from each other
+ */
+bool equal(double alpha, double beta);
 
 /**
  * @brief Fast fourier transform.

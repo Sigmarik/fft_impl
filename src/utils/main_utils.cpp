@@ -72,12 +72,14 @@ double read_number() {
 }
 
 void read_poly(poly_arg_t* polynomial, size_t size) {
+    log_printf(STATUS_REPORTS, "status", "Entered polynomial:\n");
     for (size_t id = 0; id < size; ++id) {
         if (id == 0)
             printf("Enter equation constant:\n");
         else
             printf("Enter coefficient before x^%lld:\n", (long long) id);
         polynomial[id] = { .x = read_number(), .y = 0.0 };
+        _log_printf(STATUS_REPORTS, "status", "x^%lld: %lg", (long long) id, polynomial[id].x);
     }
 }
 
@@ -107,8 +109,4 @@ void print_poly(const poly_arg_t* polynomial, size_t size) {
             printf("x");
         }
     }
-}
-
-bool equal(double alpha, double beta) {
-    return abs(alpha - beta) < CMP_EPSILON;
 }

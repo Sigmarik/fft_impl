@@ -18,6 +18,4 @@ static const int NUMBER_OF_OWLS = 10;
 
 static const size_t MAX_POLYNOMIAL_SIZE = 1024;
 
-static double CMP_EPSILON = 1e-7;
-
 #endif

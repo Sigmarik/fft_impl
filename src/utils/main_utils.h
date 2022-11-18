@@ -96,15 +96,6 @@ void read_poly(poly_arg_t* polynomial, size_t size);
 void print_poly(const poly_arg_t* polynomial, size_t size);
 
 /**
- * @brief Compare two doubles and tell if they are equal.
- * 
- * @param alpha first double
- * @param beta second double
- * @return bool if values are within the set delta radius from each other
- */
-bool equal(double alpha, double beta);
-
-/**
  * @brief Clamp the value by the upper limit and notify the user if the value was modified.
  * 
  * @param value value to clamp

@@ -29,7 +29,6 @@
 #pragma GCC diagnostic ignored "-Wstack-usage="
 
 int main(const int argc, const char** argv) {
-    SILENCE_UNUSED(CMP_EPSILON);
 
     atexit(log_end_program);
 
@@ -54,6 +53,8 @@ int main(const int argc, const char** argv) {
     memset(poly_alpha, 0, sizeof(poly_alpha));
     memset(poly_beta,  0, sizeof(poly_beta));
 
+    log_printf(STATUS_REPORTS, "status", "Reading two polynomials.\n");
+
     say("What is the degree of the first polynomial?");
     printf("Enter degree of the first polynomial:\n");
     size_t size_a = (size_t) floor(read_number());
@@ -68,28 +69,29 @@ int main(const int argc, const char** argv) {
     size_b += 1;
     read_poly(poly_beta, size_b);
 
-    fft(poly_alpha, poly_alpha + MAX_POLYNOMIAL_SIZE, false, NULL);
-
-    printf("The first polynomial is\n\\[P_1(x) = ");
+    printf("The first polynomial:\n\\[ P_1(x) = ");
     print_poly(poly_alpha, sizeof(poly_alpha) / sizeof(*poly_alpha));
-    printf("\\]\n");
+    printf(" \\]\n");
 
-    // printf("The second polynomial is\n\\[P_2(x) = ");
-    // print_poly(poly_beta, sizeof(poly_beta) / sizeof(*poly_beta));
-    // printf("\\]\n");
+    printf("The second polynomial:\n\\[ P_2(x) = ");
+    print_poly(poly_beta, sizeof(poly_beta) / sizeof(*poly_beta));
+    printf(" \\]\n");
 
-    // say("These are the polynomials I will try to multiply.");
+    say("These are the polynomials I will try to multiply.");
 
-    // poly_multiply(poly_alpha, poly_beta, MAX_POLYNOMIAL_SIZE);
+    log_printf(STATUS_REPORTS, "status", "Multiplying...\n");
 
-    // printf("Double-inverse second polynomial is\n\\[P_2(x) = ");
-    // print_poly(poly_beta, sizeof(poly_beta) / sizeof(*poly_beta));
-    // printf("\\]\n");
+    poly_multiply(poly_alpha, poly_beta, MAX_POLYNOMIAL_SIZE);
 
-    // printf("The result of the multiplication of two given polynomials is\n\\[P_1(x) \\cdot P_2(x) = P(x) = ");
-    // print_poly(poly_alpha, sizeof(poly_alpha) / sizeof(*poly_alpha));
-    // printf("\\]\n");
-    // say("Here is the result of the multiplication.");
+    log_printf(STATUS_REPORTS, "status", "Multiplication result:\n");
+    for (size_t id = 0; id < sizeof(poly_alpha) / sizeof(*poly_alpha); ++id) {
+        _log_printf(STATUS_REPORTS, "status", "(%lg, %lg)\n", poly_alpha[id].x, poly_beta[id].y);
+    }
+
+    printf("The result of the multiplication of two given polynomials is\n\\[ P_1(x) \\cdot P_2(x) = P(x) = ");
+    print_poly(poly_alpha, sizeof(poly_alpha) / sizeof(*poly_alpha));
+    printf(" \\]\n");
+    say("Here is the result of the multiplication.");
 
     return_clean(errno == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
