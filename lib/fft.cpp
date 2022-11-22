@@ -9,7 +9,7 @@
 #include "lib/alloc_tracker/alloc_tracker.h"
 
 static const double PI = 3.1415926535;
-static double CMP_EPSILON = 1e-7;
+static double CMP_EPSILON = 1e-5;
 
 bool equal(double alpha, double beta) {
     return abs(alpha - beta) < CMP_EPSILON;

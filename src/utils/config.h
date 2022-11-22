@@ -23,6 +23,7 @@ static const size_t MAX_READ_SIZE = 2048;
 
 static const unsigned int BIG_INT_BASE = 4096;
 
+//* = 3;
 static const unsigned int BIG_INT_STEP = (unsigned int)(log2(BIG_INT_BASE) / log2(16));
 
 #endif

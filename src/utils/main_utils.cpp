@@ -144,20 +144,26 @@ void read_poly_as_big(poly_arg_t* poly, size_t size) {
         input[id] ^= input[length - id - 1];
     }
     log_printf(STATUS_REPORTS, "status", "Big int after inverse transformation: %s.\n", input);
-    if (length > size * BIG_INT_STEP) length = size * BIG_INT_STEP - 1;
+    if (length > size * BIG_INT_STEP - 1) {
+        length = size * BIG_INT_STEP - 1;
+        log_printf(STATUS_REPORTS, "status", "Detected big-it string was too big, so it was cropped to %lld.\n",
+                                              (long long) (size * BIG_INT_STEP - 1));
+    }
 
     for (size_t id = 0; id < length; id++) {
         int num = 0;
         if (input[id] >= '0' && input[id] - '0' <= 10) {
             num = input[id] - '0';
-        } else if (input[id] >= 'a' && input[id] - 'a' < (int)BIG_INT_BASE - 10) {
+        } else if (input[id] >= 'a' && input[id] - 'a' < 6) {
             num = 10 + input[id] - 'a';
         } else {
             printf("Invalid character \'%c\' detected.\n", input[id]);
             log_printf(ERROR_REPORTS, "error", "Invalid character \'%c\' detected while reading user big int input.\n", input[id]);
             break;
         }
-        poly[id / BIG_INT_STEP].x += num << (4 * (id % BIG_INT_STEP));
+        for (unsigned int pow_id = 0; pow_id < (unsigned int)id % BIG_INT_STEP; ++pow_id)
+            num *= 16;
+        poly[id / BIG_INT_STEP].x += num;
     }
 }
 
@@ -167,7 +173,9 @@ void print_poly_as_big(const poly_arg_t* poly, size_t size) {
     size_t degree = poly_degree(poly, size);
 
     for (size_t digit = degree; digit != (size_t)-1; --digit) {
-        printf("%x", (unsigned int) round(poly[digit].x));
+        unsigned int num = (unsigned int) round(poly[digit].x);
+        if (digit != degree) printf("%03x", num);
+        else printf("%x", num);
     }
 }
 
