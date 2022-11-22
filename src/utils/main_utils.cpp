@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <stdarg.h>
+#include <math.h>
 
 #include "lib/util/dbg/logger.h"
 #include "lib/util/dbg/debug.h"
@@ -72,8 +73,16 @@ double read_number() {
 }
 
 void read_poly(poly_arg_t* polynomial, size_t size) {
+    if (!polynomial) return;
+
+    say("Enter degree of the polynomial.");
+    printf("Enter degree of the first polynomial:\n");
+    size_t degree = (size_t) floor(read_number());
+    gentle_clamp(degree, size - 1);
+    degree += 1;
+
     log_printf(STATUS_REPORTS, "status", "Entered polynomial:\n");
-    for (size_t id = 0; id < size; ++id) {
+    for (size_t id = 0; id < degree; ++id) {
         if (id == 0)
             printf("Enter equation constant:\n");
         else
@@ -84,11 +93,8 @@ void read_poly(poly_arg_t* polynomial, size_t size) {
 }
 
 void print_poly(const poly_arg_t* polynomial, size_t size) {
-    size_t degree = 0;
-    for (size_t id = 0; id < size; id++) {
-        if (!equal(polynomial[id].x, 0.0))
-            degree = id;
-    }
+    if (!polynomial) return;
+    size_t degree = poly_degree(polynomial, size);
     for (size_t id = degree; id != (size_t)( -1 ); --id) {
         double coeff = polynomial[id].x;
         if (equal(coeff, 0.0)) continue;
@@ -109,4 +115,71 @@ void print_poly(const poly_arg_t* polynomial, size_t size) {
             printf("x");
         }
     }
+}
+
+void broom_up(poly_arg_t* poly, size_t size) {
+    if (!poly) return;
+    unsigned int carry = 0;
+    for (size_t id = 0; id < size; id++) {
+        unsigned int value = (unsigned int) round(poly[id].x);
+        value += carry;
+        carry = value / BIG_INT_BASE;
+        value %= BIG_INT_BASE;
+    }
+}
+
+void read_poly_as_big(poly_arg_t* poly, size_t size) {
+    if (!poly) return;
+
+    say("Enter the number in 16-base.");
+    printf("16-base integer:\n>>>");
+
+    static char input[MAX_READ_SIZE] = "";
+    scanf("%s", input);
+
+    size_t length = strlen(input);
+    for (size_t id = 0; id * 2 < length - 1; ++id) {
+        input[id] ^= input[length - id - 1];
+        input[length - id - 1] ^= input[id];
+        input[id] ^= input[length - id - 1];
+    }
+    log_printf(STATUS_REPORTS, "status", "Big int after inverse transformation: %s.\n", input);
+    if (length > size * BIG_INT_STEP) length = size * BIG_INT_STEP - 1;
+
+    for (size_t id = 0; id < length; id++) {
+        int num = 0;
+        if (input[id] >= '0' && input[id] - '0' <= 10) {
+            num = input[id] - '0';
+        } else if (input[id] >= 'a' && input[id] - 'a' < (int)BIG_INT_BASE - 10) {
+            num = 10 + input[id] - 'a';
+        } else {
+            printf("Invalid character \'%c\' detected.\n", input[id]);
+            log_printf(ERROR_REPORTS, "error", "Invalid character \'%c\' detected while reading user big int input.\n", input[id]);
+            break;
+        }
+        poly[id / BIG_INT_STEP].x += num << (4 * (id % BIG_INT_STEP));
+    }
+}
+
+void print_poly_as_big(const poly_arg_t* poly, size_t size) {
+    if (!poly) return;
+
+    size_t degree = poly_degree(poly, size);
+
+    for (size_t digit = degree; digit != (size_t)-1; --digit) {
+        printf("%x", (unsigned int) round(poly[digit].x));
+    }
+}
+
+size_t poly_degree(const poly_arg_t* poly, size_t size) {
+    if (!poly) return 0;
+
+    size_t degree = 0;
+
+    for (size_t id = 0; id < size; id++) {
+        if (!equal(poly[id].x, 0.0))
+            degree = id;
+    }
+
+    return degree;
 }

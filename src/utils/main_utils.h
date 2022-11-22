@@ -20,6 +20,11 @@
 
 #include "lib/fft.h"
 
+enum Mode {
+    MODE_POLY,
+    MODE_NUM,
+};
+
 /**
  * @brief Array with stored size.
  * 
@@ -94,6 +99,46 @@ void read_poly(poly_arg_t* polynomial, size_t size);
  * @param size size of the polynomial (degree will be determined automatically)
  */
 void print_poly(const poly_arg_t* polynomial, size_t size);
+
+/**
+ * @brief Shift all polynomial coefficients so it would become an integer representation.
+ * 
+ * @param poly polynomial to broom
+ * @param size size of the polynomial (not the power!)
+ */
+void broom_up(poly_arg_t* poly, size_t size);
+
+/**
+ * @brief Read VERY big integer and compact it into a polynomial.
+ * 
+ * @param poly polynomial to fill with the number
+ * @param size size of the polynomial
+ */
+void read_poly_as_big(poly_arg_t* poly, size_t size);
+
+/**
+ * @brief Print polynomial in the format of big integer.
+ * 
+ * @param poly polynomial to print
+ * @param size size of the polynomial
+ */
+void print_poly_as_big(const poly_arg_t* poly, size_t size);
+
+/**
+ * @brief Get degree of the polynomial
+ * 
+ * @param poly polynomial
+ * @param size size of the polynomial
+ * @return degree of the polynomial
+ */
+size_t poly_degree(const poly_arg_t* poly, size_t size);
+
+/**
+ * @brief Get size of the array.
+ * 
+ * @param array
+ */
+#define arr_size(array) ( sizeof(array) / sizeof(*array) )
 
 /**
  * @brief Clamp the value by the upper limit and notify the user if the value was modified.

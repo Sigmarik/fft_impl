@@ -114,3 +114,10 @@ void poly_multiply(poly_arg_t* alpha, poly_arg_t* beta, size_t size) {
         beta[id]  /= (double)size;
     }
 }
+
+void poly_round(poly_arg_t* poly, size_t size) {
+    for (size_t id = 0; id < size; id++) {
+        poly[id].x = round(poly[id].x);
+        poly[id].y = round(poly[id].y);
+    }
+}

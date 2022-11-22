@@ -54,4 +54,12 @@ void fft(poly_arg_t* begin, poly_arg_t* end, bool inverse = false, poly_arg_t* s
  */
 void poly_multiply(poly_arg_t* alpha, poly_arg_t* beta, size_t size);
 
+/**
+ * @brief Round each coefficient of the polynomial.
+ * 
+ * @param poly polynomial
+ * @param size number of coefficients of the polynomial
+ */
+void poly_round(poly_arg_t* poly, size_t size);
+
 #endif

@@ -18,6 +18,7 @@ Clean the project (linux):
 Run the program (linux):
 
 `...# make run`
+(add `ARGS="--help` after the command to see available flags)
 
 Remove build folders (linux):
 

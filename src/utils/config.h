@@ -13,9 +13,16 @@
 #define MAIN_CONFIG_H
 
 #include <stdlib.h>
+#include <math.h>
 
 static const int NUMBER_OF_OWLS = 10;
 
 static const size_t MAX_POLYNOMIAL_SIZE = 1024;
+
+static const size_t MAX_READ_SIZE = 2048;
+
+static const unsigned int BIG_INT_BASE = 4096;
+
+static const unsigned int BIG_INT_STEP = (unsigned int)(log2(BIG_INT_BASE) / log2(16));
 
 #endif
